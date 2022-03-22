@@ -9,6 +9,7 @@ use RuneLaenen\TwoFactorAuth\Event\StorefrontTwoFactorCancelEvent;
 use RuneLaenen\TwoFactorAuth\Service\TimebasedOneTimePasswordServiceInterface;
 use Shopware\Core\Checkout\Customer\SalesChannel\AbstractLogoutRoute;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -75,9 +76,9 @@ class StorefrontTwoFactorAuthController extends StorefrontController
     /**
      * @Route("/rl-2fa/verification/cancel", name="frontend.rl2fa.verification.cancel", methods={"GET"})
      */
-    public function cancelVerification(Request $request, SalesChannelContext $context)
+    public function cancelVerification(Request $request, SalesChannelContext $context, RequestDataBag $dataBag)
     {
-        $this->logoutRoute->logout($context);
+        $this->logoutRoute->logout($context, $dataBag);
         $this->dispatcher->dispatch(new StorefrontTwoFactorCancelEvent($context));
 
         return $this->redirectToRoute('frontend.account.login.page');
