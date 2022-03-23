@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -76,9 +77,12 @@ class StorefrontTwoFactorAuthController extends StorefrontController
     /**
      * @Route("/rl-2fa/verification/cancel", name="frontend.rl2fa.verification.cancel", methods={"GET"})
      */
-    public function cancelVerification(Request $request, SalesChannelContext $context, RequestDataBag $dataBag)
+    public function cancelVerification(SalesChannelContext $context, RequestDataBag $dataBag): RedirectResponse
     {
-        $this->logoutRoute->logout($context, $dataBag);
+        if ($context->getCustomer() !== null) {
+            $this->logoutRoute->logout($context, $dataBag);
+        }
+
         $this->dispatcher->dispatch(new StorefrontTwoFactorCancelEvent($context));
 
         return $this->redirectToRoute('frontend.account.login.page');
