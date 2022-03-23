@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace RuneLaenen\TwoFactorAuth\Subscriber;
 
-use RuneLaenen\TwoFactorAuth\Controller\StorefrontTwoFactorAuthController;
 use RuneLaenen\TwoFactorAuth\Event\StorefrontTwoFactorAuthEvent;
 use RuneLaenen\TwoFactorAuth\Event\StorefrontTwoFactorCancelEvent;
 use Shopware\Core\Checkout\Customer\Event\CustomerLoginEvent;
+use Shopware\Core\SalesChannelRequest;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -61,7 +61,15 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if (!$event->getRequest()->attributes->get(SalesChannelRequest::ATTRIBUTE_IS_SALES_CHANNEL_REQUEST)) {
+            return;
+        }
+
         if ($event->getRequest()->get('_route') === 'frontend.rl2fa.verification') {
+            return;
+        }
+
+        if ($event->getRequest()->get('_route') === 'frontend.rl2fa.verification.cancel') {
             return;
         }
 

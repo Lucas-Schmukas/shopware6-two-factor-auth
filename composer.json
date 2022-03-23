@@ -1,6 +1,6 @@
 {
     "name": "runelaenen/shopware6-two-factor-auth",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "Two Factor Authentication plugin",
     "type": "shopware-platform-plugin",
     "license": "MIT",
