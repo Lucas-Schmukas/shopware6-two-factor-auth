@@ -53,15 +53,26 @@ class CustomerLoginSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $controller = $event->getController();
-        if (\is_array($controller)) {
-            $controller = $controller[0];
-        }
-        if ($controller instanceof StorefrontTwoFactorAuthController) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
-        $url = $this->router->generate('frontend.rl2fa.verification');
+        if ($event->getRequest()->isXmlHttpRequest()) {
+            return;
+        }
+
+        if ($event->getRequest()->get('_route') === 'frontend.rl2fa.verification') {
+            return;
+        }
+
+        $queries = $event->getRequest()->query;
+        $parameters = [];
+
+        if ($queries->has('redirectTo')) {
+            $parameters['redirect'] = $queries->all();
+        }
+
+        $url = $this->router->generate('frontend.rl2fa.verification', $parameters);
         $response = new RedirectResponse($url);
 
         $response->send();
